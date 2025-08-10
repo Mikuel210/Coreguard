@@ -1,6 +1,7 @@
+using Helpers;
 using UnityEngine;
 
-public class CoreController : MonoBehaviour
+public class CoreController : Singleton<CoreController>
 {
     [SerializeField] private float size;
     [SerializeField] private float sizeSmoothing;

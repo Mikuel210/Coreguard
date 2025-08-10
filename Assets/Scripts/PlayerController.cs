@@ -1,9 +1,12 @@
+using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float speed;
-    [SerializeField] private float coreRepulsion;
+    [SerializeField] private float coreRepulsionImpulse;
+    [SerializeField] private float coreRepulsionForce;
 
     private Rigidbody2D _rigidbody;
     private Animator _animator;    
@@ -44,6 +47,15 @@ public class PlayerController : MonoBehaviour
         
         // Apply repulsive force
         Vector2 direction = (transform.position - other.transform.position).normalized;
-        _rigidbody.AddForce(direction * coreRepulsion, ForceMode2D.Impulse);
+        _rigidbody.AddForce(direction * coreRepulsionImpulse, ForceMode2D.Impulse);
+    }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (!other.CompareTag("Core")) return;
+        
+        // Apply repulsive force
+        Vector2 direction = (transform.position - other.transform.position).normalized;
+        _rigidbody.AddForce(direction * coreRepulsionForce, ForceMode2D.Force);
     }
 }

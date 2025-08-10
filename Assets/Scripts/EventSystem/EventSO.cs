@@ -6,5 +6,13 @@ public class EventSO : ScriptableObject
 {
     public event Action OnInvoked;
 
-    public void Invoke() => OnInvoked?.Invoke();
+    public void Invoke()
+    {
+        try {
+            OnInvoked?.Invoke();
+        }
+        catch (Exception e) {
+            Debug.LogError("An exception was caught while invoking an event: " + e);
+        }
+    }
 }
