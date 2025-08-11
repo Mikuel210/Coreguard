@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fd09e0b515f494a90c47efd1a52bac5, type: 3}
+  m_Name: Capacitor2
+  m_EditorClassIdentifier: 
+  energyCost: 1000
+  costIncrease: 0
+  increasedCost: 0
+  dimensions: {x: 1, y: 1}
+  sprite: {fileID: 2406370208439224552, guid: 1a9b52bd86eeb8d4088bbe55ad589600, type: 3}
+  prefab: {fileID: 5622952362917785395, guid: e6c5db8add03ee048ac1e425f2a96b34, type: 3}

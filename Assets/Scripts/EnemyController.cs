@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,23 +7,24 @@ public class EnemyController : MonoBehaviour
 {
     [SerializeField] private float speed;
     [SerializeField] private float damageToCore;
+    [SerializeField] private float damageToBuildings;
     [SerializeField] private Slider healthbarSlider;
     
     private Health _health;
-    private Animator _animator;    
+    private Animator _animator;
+
+    private List<GameObject> _buildingsBeingTouched = new();
     
     void Start()
     {
         _health = GetComponent<Health>();
         _animator = GetComponent<Animator>();
-        
-        _health.OnDeath += () =>
-            Destroy(gameObject);
     }
     
     void Update()
     {
         UpdateMovement();
+        UpdateBuildingDamage();
     }
 
     void UpdateMovement()
@@ -43,13 +46,38 @@ public class EnemyController : MonoBehaviour
         _animator.SetInteger("x", Mathf.RoundToInt(x));
         _animator.SetInteger("y", Mathf.RoundToInt(y));
     }
+    
+    private float _damageTime;
+    void UpdateBuildingDamage()
+    {
+        _damageTime += Time.deltaTime;
+
+        if (_damageTime < 1) return;
+
+        bool error = true;
+        
+        for (int i = _buildingsBeingTouched.Count - 1; i >= 0; i--)
+        {
+            GameObject building = _buildingsBeingTouched[i];
+            building.GetComponent<Health>().TakeDamage(damageToBuildings);
+        }
+        
+        _damageTime = 0;
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Core"))
-        {
-            other.GetComponent<Health>().TakeDamage(damageToCore);
-            Destroy(gameObject);
-        }
+        if (!other.CompareTag("Core")) return;
+        
+        other.GetComponent<Health>().TakeDamage(damageToCore);
+        Destroy(gameObject);
     }
+
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (!other.collider.CompareTag("Building")) return;
+        _buildingsBeingTouched.Add(other.gameObject);
+    }
+    
+    void OnCollisionExit2D(Collision2D other) => _buildingsBeingTouched.Remove(other.gameObject);
 }

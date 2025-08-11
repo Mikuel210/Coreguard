@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Helpers;
 using UnityEngine;
@@ -12,6 +13,8 @@ public class BuildingSystem : Singleton<BuildingSystem>
     private static bool _placingBuilding;
     private static BuildingSO _buildingBeingPlaced;
     private static GameObject _buildingPlaceholder;
+    
+    public event Action OnBuildingPlaced;
     
     void Start()
     {
@@ -61,6 +64,8 @@ public class BuildingSystem : Singleton<BuildingSystem>
         
         GameManager.Instance.LoseEnergy(_buildingBeingPlaced.energyCost + _buildingBeingPlaced.increasedCost);
         _buildingBeingPlaced.increasedCost += _buildingBeingPlaced.costIncrease;
+        
+        OnBuildingPlaced?.Invoke();
     }
 
     private bool CanPlace(Vector3 worldPosition)

@@ -1,30 +1,32 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Health : MonoBehaviour
 {
     [field: SerializeField] public float MaximumHealth { get; private set; } = 100f;
 
-    [SerializeField] private float _currentHealth;
-
+    [SerializeField] private float currentHealth;
     public float CurrentHealth
     {
-        get => _currentHealth;
+        get => currentHealth;
         
         private set
         {
-            _currentHealth = Mathf.Clamp(value, 0, MaximumHealth);
+            currentHealth = Mathf.Clamp(value, 0, MaximumHealth);
             
             healthChangedEventBus.Invoke();
             OnHealthChanged?.Invoke();
 
-            if (_currentHealth <= 0)
+            if (currentHealth <= 0)
             {
                 deathEventBus.Invoke();
                 OnDeath?.Invoke();
             }
         }
     }
+    
+    [SerializeField] private bool destroyOnDeath;
     
     public EventBus deathEventBus;
     public EventBus healthChangedEventBus;
@@ -34,6 +36,12 @@ public class Health : MonoBehaviour
     
     public void TakeDamage(float damage) => CurrentHealth -= damage;
     public void Heal(float heal) => CurrentHealth += heal;
-    
-    void Start() => CurrentHealth = MaximumHealth;
+
+    void Start()
+    {
+        CurrentHealth = MaximumHealth;
+        
+        if (destroyOnDeath)
+            OnDeath += () => Destroy(gameObject);
+    }
 }

@@ -8,6 +8,21 @@ using Random = System.Random;
 
 public class GameManager : Singleton<GameManager>
 {
+    [SerializeField] private int capacitance;
+    public int Capacitance
+    {
+        get => capacitance;
+        
+        private set
+        {
+            capacitance = value;
+            capacitanceChangedEventBus.Invoke();
+            Energy = Energy;
+        }    
+    }
+    
+    [SerializeField] private EventBus capacitanceChangedEventBus;
+    
     [SerializeField] private int energy;
     public int Energy
     {
@@ -15,7 +30,7 @@ public class GameManager : Singleton<GameManager>
         
         private set
         {
-            energy = value;
+            energy = Mathf.Min(value, capacitance);
             energyChangedEventBus.Invoke();
         }
     }
@@ -133,4 +148,8 @@ public class GameManager : Singleton<GameManager>
     public void GainEnergy(int energy) => Energy += energy;
     
     public void LoseEnergy(int energy) => Energy -= energy;
+    
+    public void AddCapacitance(int capacitance) => Capacitance += capacitance;
+
+    public void LoseCapacitance(int capacitance) => Capacitance -= capacitance;
 }

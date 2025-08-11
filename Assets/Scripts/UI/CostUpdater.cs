@@ -16,6 +16,11 @@ public class CostUpdater : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _text.text = (building.energyCost + building.increasedCost).ToString();
+        int cost = (building.energyCost + building.increasedCost);
+
+        if (cost < 10_000)
+            _text.text = cost.ToString();
+        else
+            _text.text = cost / 1_000f + "K";
     }
 }

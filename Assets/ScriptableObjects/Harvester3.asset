@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fd09e0b515f494a90c47efd1a52bac5, type: 3}
+  m_Name: Harvester3
+  m_EditorClassIdentifier: 
+  energyCost: 10000
+  costIncrease: 1000
+  increasedCost: 4500
+  dimensions: {x: 2, y: 2}
+  sprite: {fileID: 4881433992971709569, guid: 45081174d4fa8cf4991a3db4c2d134ad, type: 3}
+  prefab: {fileID: 3383956730015541214, guid: 4b665e22a273349418cbdbb723cfe795, type: 3}

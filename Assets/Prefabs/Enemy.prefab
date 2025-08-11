@@ -53,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   damageToCore: 10
+  damageToBuildings: 1
   healthbarSlider: {fileID: 2758365523122393923}
 --- !u!114 &2131698923271974535
 MonoBehaviour:
@@ -67,7 +68,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <MaximumHealth>k__BackingField: 5
-  _currentHealth: 0
+  currentHealth: 0
+  destroyOnDeath: 1
   deathEventBus:
     events: []
   healthChangedEventBus:

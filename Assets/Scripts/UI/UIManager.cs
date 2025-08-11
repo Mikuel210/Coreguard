@@ -9,6 +9,9 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private EventSO energyUpdatedEvent;
     [SerializeField] private TextMeshProUGUI _energyText;
     
+    [SerializeField] private EventSO capacitanceUpdatedEvent;
+    [SerializeField] private TextMeshProUGUI _capacitanceText;
+    
     [SerializeField] private EventSO waveUpdatedEvent;
     [Space, SerializeField] private TextMeshProUGUI _waveText;
     [SerializeField] private TextMeshProUGUI _stateTimeText;
@@ -30,11 +33,8 @@ public class UIManager : Singleton<UIManager>
 
     void Start()
     {
-        energyUpdatedEvent.OnInvoked += () =>
-        {
-            _energyText.text = GameManager.Instance.Energy.ToString();
-            UpdateEnergyText();
-        };
+        energyUpdatedEvent.OnInvoked += UpdateEnergyText;
+        capacitanceUpdatedEvent.OnInvoked += UpdateCapacitanceText;
 
         waveUpdatedEvent.OnInvoked += () =>
             _waveText.text = "WAVE " + (GameManager.Instance.CurrentWaveIndex + 1);
@@ -83,8 +83,17 @@ public class UIManager : Singleton<UIManager>
 
     void UpdateEnergyText()
     {
+        _energyText.text = GameManager.Instance.Energy.ToString();
         Vector2 preferredSize = _energyText.GetPreferredValues();
         _energyText.rectTransform.sizeDelta = preferredSize;
+    }
+
+    void UpdateCapacitanceText()
+    {
+        _capacitanceText.text = "/" + GameManager.Instance.Capacitance;
+        
+        Vector2 preferredSize = _capacitanceText.GetPreferredValues();
+        _capacitanceText.rectTransform.sizeDelta = new(preferredSize.x, _capacitanceText.rectTransform.sizeDelta.y);
     }
 
     public void Buy(string buildingName)
