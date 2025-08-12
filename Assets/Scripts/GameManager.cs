@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Helpers;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using Random = System.Random;
 
 public class GameManager : Singleton<GameManager>
 {
-    [SerializeField] private int capacitance;
+    [field: SerializeField] public bool IsTutorial { get; private set; }
+    
+    [Space, SerializeField] private int capacitance;
     public int Capacitance
     {
         get => capacitance;
@@ -37,6 +40,8 @@ public class GameManager : Singleton<GameManager>
     
     [SerializeField] private EventBus energyChangedEventBus;
 
+    private bool _checkWin;
+
     private int _currentWaveIndex;
     public int CurrentWaveIndex
     {
@@ -47,20 +52,13 @@ public class GameManager : Singleton<GameManager>
             _currentWaveIndex = value;
 
             try {
-                CurrentWave = Waves[_currentWaveIndex];    
-            } catch { }
-            
-            
-            _currentWaveDuration = 0;
-            
-            foreach (Burst burst in CurrentWave.bursts)
-                _currentWaveDuration += burst.delay * burst.amount;
-            
-            waveChangedEventBus.Invoke();
+                CurrentWave = Waves[_currentWaveIndex];
+            }
+            catch { }
         }
     }
     
-    [SerializeField] private EventBus waveChangedEventBus;
+    [SerializeField] private EventBus stateChangedEventBus;
 
     public Wave CurrentWave { get; private set; }
     private float _currentWaveDuration;
@@ -72,6 +70,7 @@ public class GameManager : Singleton<GameManager>
         public GameObject prefab;
         public int amount;
         public float delay;
+        public float initialDelay;
     }
 
     [Serializable]
@@ -87,24 +86,63 @@ public class GameManager : Singleton<GameManager>
     public enum GameState
     {
         Intermission,
-        SpawningWave
+        SpawningWave,
+        Won,
+        Lost
     }
 
-    public GameState CurrentState { get; private set; } = GameState.Intermission;
-    
-    public float StateTime { get; private set; }
+    private GameState _currentState = GameState.Intermission;
 
-    void Start() => CurrentWaveIndex = 0;
+    public GameState CurrentState
+    {
+        get => _currentState;
+
+        private set
+        {
+            _currentState = value;
+            stateChangedEventBus.Invoke();
+        }
+    }
+
+    public float StateTime { get; private set; }
+    
+    private bool _hiddenByTutorial;
+    public bool HiddenByTutorial
+    {
+        get => _hiddenByTutorial;
+        
+        set
+        {
+            _hiddenByTutorial = value;
+            stateChangedEventBus.Invoke();
+        }
+    }
+
+    
+    [SerializeField] private EventSO coreDeathEvent;
+    
+    
+    void Start()
+    {
+        _hiddenByTutorial = IsTutorial;
+        CurrentWaveIndex = 0;
+        coreDeathEvent.OnInvoked += Lose;
+    }
     
     void Update()
     {
+        if (IsTutorial && HiddenByTutorial) return;
+        
         StateTime += Time.deltaTime;
         
         if (CurrentState == GameState.Intermission)
         {
+            if (CurrentWaveIndex == Waves.Count && GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
+                Win();
+            
             if (StateTime < CurrentWave.delay) return;
             
-            StartCoroutine(SpawnWave());
+            SpawnWave();
             
             CurrentState = GameState.SpawningWave;
             StateTime = 0;
@@ -114,22 +152,29 @@ public class GameManager : Singleton<GameManager>
             if (StateTime < _currentWaveDuration) return;
             
             CurrentWaveIndex += 1;
-
+            
             CurrentState = GameState.Intermission;
             StateTime = 0;
         }
     }
     
     
-    private IEnumerator SpawnWave()
+    private void SpawnWave()
     {
+        _currentWaveDuration = 0;
+
         foreach (Burst burst in CurrentWave.bursts)
-            yield return SpawnBurst(burst);
+        {
+            StartCoroutine(SpawnBurst(burst));   
+            _currentWaveDuration = Mathf.Max(_currentWaveDuration, burst.initialDelay + burst.delay * burst.amount);
+        }
     }    
     
     private Random _random = new();
     private IEnumerator SpawnBurst(Burst burst)
     {
+        yield return new WaitForSeconds(burst.initialDelay);
+        
         float distance = 25f;
 
         int angle = _random.Next(0, 360);
@@ -152,4 +197,11 @@ public class GameManager : Singleton<GameManager>
     public void AddCapacitance(int capacitance) => Capacitance += capacitance;
 
     public void LoseCapacitance(int capacitance) => Capacitance -= capacitance;
+
+    public void Win() => CurrentState = GameState.Won;
+    
+    public void Lose() => CurrentState = GameState.Lost;
+    
+    
+    public void LoadScene(int scene) => SceneManager.LoadScene(scene);
 }

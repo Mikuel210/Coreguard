@@ -15,7 +15,7 @@ public class EnergyHarvester : MonoBehaviour
     void Start()
     {
         _lineRenderer = GetComponent<LineRenderer>();
-        BuildingSystem.Instance.OnBuildingPlaced += UpdateLineRenderer;
+        BuildingSystem.Instance.OnBuildingPlacedOrDestroyed += UpdateLineRenderer;
         
         UpdateLineRenderer();
     }
@@ -34,7 +34,7 @@ public class EnergyHarvester : MonoBehaviour
     {
         GameObject nearestCapacitor = GetNearestCapacitor();
 
-        if (nearestCapacitor is null)
+        if (nearestCapacitor == null)
         {
             _lineRenderer.positionCount = 2;
             _lineRenderer.SetPosition(0, connectToCore ? Vector3.zero : transform.position);
