@@ -32,7 +32,12 @@ public class EnergyHarvester : MonoBehaviour
 
     void UpdateLineRenderer()
     {
-        GameObject nearestCapacitor = GetNearestCapacitor();
+        GameObject nearestCapacitor = null;
+
+        try
+        {
+            nearestCapacitor = GetNearestCapacitor();
+        } catch { }
 
         if (nearestCapacitor == null)
         {

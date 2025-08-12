@@ -15,21 +15,16 @@ public class Health : MonoBehaviour
         {
             currentHealth = Mathf.Clamp(value, 0, MaximumHealth);
             
-            healthChangedEventBus.Invoke();
             OnHealthChanged?.Invoke();
 
             if (currentHealth <= 0)
             {
-                deathEventBus.Invoke();
                 OnDeath?.Invoke();
             }
         }
     }
     
     [SerializeField] private bool destroyOnDeath;
-    
-    public EventBus deathEventBus;
-    public EventBus healthChangedEventBus;
     
     public event Action OnDeath;
     public event Action OnHealthChanged;

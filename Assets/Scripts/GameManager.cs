@@ -19,12 +19,12 @@ public class GameManager : Singleton<GameManager>
         private set
         {
             capacitance = value;
-            capacitanceChangedEventBus.Invoke();
+            OnCapacitanceChanged?.Invoke();
             Energy = Energy;
         }    
     }
     
-    [SerializeField] private EventBus capacitanceChangedEventBus;
+    public event Action OnCapacitanceChanged;
     
     [SerializeField] private int energy;
     public int Energy
@@ -34,11 +34,11 @@ public class GameManager : Singleton<GameManager>
         private set
         {
             energy = Mathf.Min(value, capacitance);
-            energyChangedEventBus.Invoke();
+            OnEnergyChanged?.Invoke();
         }
     }
     
-    [SerializeField] private EventBus energyChangedEventBus;
+    public event Action OnEnergyChanged;
 
     private bool _checkWin;
 
@@ -58,7 +58,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
     
-    [SerializeField] private EventBus stateChangedEventBus;
+    public event Action OnStateChanged;
 
     public Wave CurrentWave { get; private set; }
     private float _currentWaveDuration;
@@ -100,7 +100,11 @@ public class GameManager : Singleton<GameManager>
         private set
         {
             _currentState = value;
-            stateChangedEventBus.Invoke();
+            
+            if (_currentState == GameState.SpawningWave)
+                LatestStartedWave++;
+            
+            OnStateChanged?.Invoke();
         }
     }
 
@@ -114,19 +118,19 @@ public class GameManager : Singleton<GameManager>
         set
         {
             _hiddenByTutorial = value;
-            stateChangedEventBus.Invoke();
+            OnStateChanged?.Invoke();
         }
     }
 
     
-    [SerializeField] private EventSO coreDeathEvent;
+    public int LatestStartedWave { get; private set; }
     
     
     void Start()
     {
         _hiddenByTutorial = IsTutorial;
         CurrentWaveIndex = 0;
-        coreDeathEvent.OnInvoked += Lose;
+        CoreController.Instance.GetComponent<Health>().OnDeath += Lose;
     }
     
     void Update()

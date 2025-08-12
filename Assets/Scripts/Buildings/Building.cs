@@ -8,8 +8,8 @@ public class Building : MonoBehaviour
     {
         Grid grid = BuildingSystem.Instance.Grid;
         
-        (int gridX, int gridY) = grid.GetXY(transform.position);
         Vector2 dimensions = BuildingSO.dimensions;
+        (int gridX, int gridY) = grid.GetXY(transform.position - new Vector3(0.5f * dimensions.x, 0.5f * dimensions.y));
         
         for (int x = gridX; x < gridX + dimensions.x; x++)
         {

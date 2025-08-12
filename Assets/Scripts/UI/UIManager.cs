@@ -8,13 +8,9 @@ using UnityEngine.UI;
 
 public class UIManager : Singleton<UIManager>
 {
-    [SerializeField] private EventSO energyUpdatedEvent;
     [SerializeField] private TextMeshProUGUI _energyText;
-    
-    [SerializeField] private EventSO capacitanceUpdatedEvent;
     [SerializeField] private TextMeshProUGUI _capacitanceText;
     
-    [SerializeField] private EventSO stateChangedEvent;
     [Space, SerializeField] private TextMeshProUGUI _waveText;
     [SerializeField] private TextMeshProUGUI _stateTimeText;
 
@@ -42,9 +38,9 @@ public class UIManager : Singleton<UIManager>
 
     void Start()
     {
-        energyUpdatedEvent.OnInvoked += UpdateEnergyText;
-        capacitanceUpdatedEvent.OnInvoked += UpdateCapacitanceText;
-        stateChangedEvent.OnInvoked += UpdateStatePanels;
+        GameManager.Instance.OnEnergyChanged += UpdateEnergyText;
+        GameManager.Instance.OnCapacitanceChanged += UpdateCapacitanceText;
+        GameManager.Instance.OnStateChanged += UpdateStatePanels;
         
         UpdateShop();
         UpdateEnergyText();
@@ -89,7 +85,7 @@ public class UIManager : Singleton<UIManager>
             losePanel.SetActive(true);
         
         foreach (TextMeshProUGUI text in waveTexts)
-            text.text = "WAVE " + GameManager.Instance.CurrentWaveIndex;
+            text.text = "WAVE " + GameManager.Instance.LatestStartedWave;
 
         int time = Mathf.FloorToInt(Time.timeSinceLevelLoad);
         
