@@ -20,10 +20,22 @@ public class StartScreenController : MonoBehaviour
         }
     }
 
+    private int _optionsIndex;
+
     void Start()
     {
         ShowOptions(0);
         UpdateSettings();
+    }
+
+    void Update()
+    {
+        if (!Input.GetMouseButtonDown(1)) return;
+        
+        if (AreSettingsOpen)
+            CloseSettings();
+        else if (_optionsIndex == 1)
+            ShowOptions(0);
     }
     
     
@@ -31,6 +43,8 @@ public class StartScreenController : MonoBehaviour
 
     public void ShowOptions(int index)
     {
+        _optionsIndex = index; 
+        
         for (int i = 0; i < optionPanels.Count; i++)
         {
             GameObject optionPanel = optionPanels[i];

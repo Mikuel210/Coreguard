@@ -77,13 +77,9 @@ public class BuildingSystem : Singleton<BuildingSystem>
         else
             placeholderRenderer.material.color = new Color(1, 0, 0, placeholderRenderer.material.color.a);
 
-        // Stop building on escape
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PauseSystem.Instance.DontPauseThisFrame();
+        // Stop building on right click
+        if (Input.GetMouseButtonDown(1) && !PauseSystem.Instance.IsPaused)
             StopBuilding();
-            PauseSystem.Instance.DontPauseThisFrame();
-        }
 
         // Build on click
         if (!Input.GetMouseButton(0)) return;
@@ -124,11 +120,9 @@ public class BuildingSystem : Singleton<BuildingSystem>
     {
         if (!DeletingBuildings) return;
         
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetMouseButtonDown(1) && !PauseSystem.Instance.IsPaused)
         {
-            PauseSystem.Instance.DontPauseThisFrame();
             StopDeleting();
-            PauseSystem.Instance.DontPauseThisFrame();
             
             if (_previousBuildingUnderMouse != null)
                 _previousBuildingUnderMouse.GetComponent<Renderer>().material.color = new Color(1, 1, 1, 1);

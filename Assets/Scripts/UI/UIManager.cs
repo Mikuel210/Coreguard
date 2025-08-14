@@ -58,13 +58,9 @@ public class UIManager : Singleton<UIManager>
 
     void Update()
     {
-        // Close shop on escape
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PauseSystem.Instance.DontPauseThisFrame();
+        // Close shop on right click
+        if (Input.GetMouseButtonDown(1))
             CloseShop();   
-            PauseSystem.Instance.DontPauseThisFrame();
-        }
         
         // Update state time
         UpdateStateTime();

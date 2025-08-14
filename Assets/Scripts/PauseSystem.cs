@@ -30,8 +30,6 @@ public class PauseSystem : Singleton<PauseSystem>
         }
     }
     
-    private bool _dontPauseThisFrame;
-    
     void Start()
     {
         UpdatePauseMenu();
@@ -40,31 +38,13 @@ public class PauseSystem : Singleton<PauseSystem>
     
     void Update()
     {
-        if (_dontPauseThisFrame)
-        {
-            _dontPauseThisFrame = false;
-            return;
-        }
+        if (!Input.GetMouseButtonDown(1)) return;
+        if (!IsPaused) return;
         
-        if (!Input.GetKeyDown(KeyCode.Escape)) return;
-
-        if (!IsPaused)
-        {
-            if (BuildingSystem.PlacingBuilding || BuildingSystem.DeletingBuildings) return;
-            if (UIManager.Instance.IsShopOpen) return;
-            
-            if (GameManager.Instance.CurrentState == GameManager.GameState.Won ||
-                GameManager.Instance.CurrentState == GameManager.GameState.Lost) return;
-            
-            IsPaused = true;
-        }
+        if (AreSettingsOpen)
+            CloseSettings();
         else
-        {
-            if (AreSettingsOpen)
-                CloseSettings();
-            else
-                IsPaused = false;
-        }
+            IsPaused = false;
     }
 
     void UpdatePauseMenu()
@@ -95,10 +75,10 @@ public class PauseSystem : Singleton<PauseSystem>
     
     public void ResumeGame() => IsPaused = false;
     
+    public void TogglePause() => IsPaused = !IsPaused;
+    
     public void OpenSettings() => AreSettingsOpen = true;
     public void CloseSettings() => AreSettingsOpen = false;
-
-    public void DontPauseThisFrame() => _dontPauseThisFrame = true;
 
     public void Quit()
     {

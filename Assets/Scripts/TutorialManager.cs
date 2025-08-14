@@ -15,7 +15,7 @@ public class TutorialManager : Singleton<TutorialManager>
         "The Core can turn your thoughts into Raw Energy, a substance that can be shaped into anything you imagine.",
         "Click on the Core to turn your thoughts into Raw Energy. Gather 50 units to continue.",
         "Now, let's make your first Dream Condenser: it draws fragments of dreams from the air and turns them into Raw Energy.",
-        "Open the shop in the bottom left, select the condenser, use WASD to move around and click to place it wherever you like. Finally, press Escape to stop placing.",
+        "Open the shop in the bottom left, select the condenser, use WASD to move around and click to place it wherever you like. Finally, right click to stop placing.",
         "Keep clicking the Core and placing Dream Condensers until you gather 500 units of Raw Energy.",
         "Place a Tier II Dream Condenser. It generates 15 units of Raw Energy per second.",
         "Your energy storage is limited. If you want to progress any further, you'll have to build Energy Vaults. Place enough of them to store 2,500 units of Raw Energy.",
