@@ -328,10 +328,6 @@ MonoBehaviour:
   <MaximumHealth>k__BackingField: 10
   currentHealth: 0
   destroyOnDeath: 1
-  deathEventBus:
-    events: []
-  healthChangedEventBus:
-    events: []
 --- !u!114 &1573761036919793304
 MonoBehaviour:
   m_ObjectHideFlags: 0

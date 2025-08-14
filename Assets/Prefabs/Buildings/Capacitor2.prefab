@@ -220,10 +220,6 @@ MonoBehaviour:
   <MaximumHealth>k__BackingField: 25
   currentHealth: 0
   destroyOnDeath: 1
-  deathEventBus:
-    events: []
-  healthChangedEventBus:
-    events: []
 --- !u!95 &5445682824423304459
 Animator:
   serializedVersion: 7

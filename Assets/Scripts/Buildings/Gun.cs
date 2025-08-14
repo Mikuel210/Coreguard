@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CodeMonkey.Utils;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
@@ -16,6 +17,7 @@ public class Gun : MonoBehaviour
 
     private Transform _gunAnchor;
     private LineRenderer _lineRenderer;
+    private AudioSource _audioSource;
     
     private float _time;
     private bool _shooting;
@@ -25,6 +27,7 @@ public class Gun : MonoBehaviour
     {
         _gunAnchor = transform.Find("GunAnchor");
         _lineRenderer = GetComponent<LineRenderer>();
+        _audioSource = GetComponent<AudioSource>();
 
         _lineRenderer.startWidth = lineWidth;
         _lineRenderer.endWidth = lineWidth;
@@ -52,6 +55,11 @@ public class Gun : MonoBehaviour
             enemy.GetComponent<Health>().TakeDamage(damage);
 
             UpdateShooting(enemy);
+            
+            _audioSource.pitch = Random.Range(0.9f, 1.1f);
+            _audioSource.Play();
+            
+            Utils.Popup(damage.ToString(), enemy.transform.position, new (209 / 255f, 6 / 255f, 0 / 255f));
         }
         else
         {

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using CodeMonkey.Utils;
 using UnityEngine;
 
 public class EnergyHarvester : MonoBehaviour
@@ -28,16 +30,19 @@ public class EnergyHarvester : MonoBehaviour
 
         GameManager.Instance.GainEnergy(energy);
         _time = 0;
+        
+        Utils.Popup(energy.ToString(), transform.position, new (14 / 255f, 5 / 255f, 249 / 255f));
     }
 
     void UpdateLineRenderer()
     {
         GameObject nearestCapacitor = null;
 
-        try
-        {
+        try {
             nearestCapacitor = GetNearestCapacitor();
         } catch { }
+
+        if (_lineRenderer == null) return;
 
         if (nearestCapacitor == null)
         {

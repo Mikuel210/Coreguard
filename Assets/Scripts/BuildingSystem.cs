@@ -11,14 +11,33 @@ public class BuildingSystem : Singleton<BuildingSystem>
     
     [field: SerializeField] public List<BuildingSO> Buildings { get; private set; }
     [SerializeField] private GameObject _buildingPlaceholderPrefab;
+
+    [SerializeField] private AudioClip placeClip;
+    [SerializeField] private AudioClip destroyClip;
     
     public static bool PlacingBuilding { get; private set; }
     private static BuildingSO _buildingBeingPlaced;
     private static GameObject _buildingPlaceholder;
     
     public event Action OnBuildingPlacedOrDestroyed;
+
+    private static bool _deletingBuildings;
+
+    public static bool DeletingBuildings
+    {
+        get => _deletingBuildings;
+        
+        private set
+        {
+            _deletingBuildings = value;
+            OnDeletingBuildingsChanged?.Invoke();
+        }
+    }
+
+    public static event Action OnDeletingBuildingsChanged;
     
-    public static bool DeletingBuildings { get; private set; }
+    
+    private AudioSource _audioSource;
     
     void Start()
     {
@@ -26,6 +45,8 @@ public class BuildingSystem : Singleton<BuildingSystem>
         
         Vector3 origin = new Vector3(1, 1) * dimensions * -0.5f;
         Grid = new(dimensions, dimensions, 1, origin);
+        
+        _audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -58,7 +79,11 @@ public class BuildingSystem : Singleton<BuildingSystem>
 
         // Stop building on escape
         if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseSystem.Instance.DontPauseThisFrame();
             StopBuilding();
+            PauseSystem.Instance.DontPauseThisFrame();
+        }
 
         // Build on click
         if (!Input.GetMouseButton(0)) return;
@@ -71,6 +96,10 @@ public class BuildingSystem : Singleton<BuildingSystem>
         _buildingBeingPlaced.increasedCost += _buildingBeingPlaced.costIncrease;
         
         OnBuildingPlacedOrDestroyed?.Invoke();
+        
+        _audioSource.clip = placeClip;
+        _audioSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
+        _audioSource.Play();
     }
     
     private static List<GameObject> GetGameObjectsUnderMouse()
@@ -94,6 +123,18 @@ public class BuildingSystem : Singleton<BuildingSystem>
     void UpdateBuildingRemoval()
     {
         if (!DeletingBuildings) return;
+        
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseSystem.Instance.DontPauseThisFrame();
+            StopDeleting();
+            PauseSystem.Instance.DontPauseThisFrame();
+            
+            if (_previousBuildingUnderMouse != null)
+                _previousBuildingUnderMouse.GetComponent<Renderer>().material.color = new Color(1, 1, 1, 1);
+            
+            return;
+        }
 
         GameObject buildingUnderMouse = GetGameObjectsUnderMouse().FirstOrDefault(e => e.CompareTag("Building"));
 
@@ -102,22 +143,19 @@ public class BuildingSystem : Singleton<BuildingSystem>
         
         if (!buildingUnderMouse) return;
         
-        buildingUnderMouse.GetComponent<Renderer>().material.color = new Color(1, 0, 0, 1);
         _previousBuildingUnderMouse = buildingUnderMouse;
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            StopDeleting();
-            buildingUnderMouse.GetComponent<Renderer>().material.color = new Color(1, 1, 1, 1);
-            
-            return;
-        }
+        
+        buildingUnderMouse.GetComponent<Renderer>().material.color = new Color(1, 0, 0, 1);
         
         if (!Input.GetMouseButton(0)) return;
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
         Destroy(buildingUnderMouse);
         OnBuildingPlacedOrDestroyed?.Invoke();
+        
+        _audioSource.clip = destroyClip;
+        _audioSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
+        _audioSource.Play();
     }
 
     private bool CanPlace(Vector3 worldPosition)
@@ -201,5 +239,13 @@ public class BuildingSystem : Singleton<BuildingSystem>
     public void StopDeleting()
     {
         DeletingBuildings = false;
+    }
+
+    public void ToggleDeleting()
+    {
+        if (DeletingBuildings)
+            StopDeleting();
+        else
+            StartDeleting();
     }
 }

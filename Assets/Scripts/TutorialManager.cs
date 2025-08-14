@@ -13,8 +13,9 @@ public class TutorialManager : Singleton<TutorialManager>
     {
         "This is the Core. Nobody remembers building it. Nobody remembers anything before it. We only know one truth: it holds the power of creation itself. If it ever falls into the wrong hands, reality as we know it will collapse.", 
         "The Core can turn your thoughts into Raw Energy, a substance that can be shaped into anything you imagine.",
-        "Click on the Core to channel your thoughts into Raw Energy. Gather 50 units to continue.",
-        "Now, let's make your first Dream Condenser: it draws fragments of dreams from the air and turns them into Raw Energy. Open the shop in the bottom left, select the condenser, use WASD to move around and click to place it wherever you like. Finally, press Escape to stop placing.",
+        "Click on the Core to turn your thoughts into Raw Energy. Gather 50 units to continue.",
+        "Now, let's make your first Dream Condenser: it draws fragments of dreams from the air and turns them into Raw Energy.",
+        "Open the shop in the bottom left, select the condenser, use WASD to move around and click to place it wherever you like. Finally, press Escape to stop placing.",
         "Keep clicking the Core and placing Dream Condensers until you gather 500 units of Raw Energy.",
         "Place a Tier II Dream Condenser. It generates 15 units of Raw Energy per second.",
         "Your energy storage is limited. If you want to progress any further, you'll have to build Energy Vaults. Place enough of them to store 2,500 units of Raw Energy.",
@@ -30,7 +31,7 @@ public class TutorialManager : Singleton<TutorialManager>
 
     private IEnumerator StartTutorial()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
         ShowMessage();
     }
 
@@ -42,35 +43,35 @@ public class TutorialManager : Singleton<TutorialManager>
                 if (GameManager.Instance.Energy < 50) return;
                 break;
             
-            case 4:
+            case 5:
                 if (!FindBuilding("Condenser1")) return;
                 if (BuildingSystem.PlacingBuilding) return;
 
                 break;
             
-            case 5:
+            case 6:
                 if (GameManager.Instance.Energy < 500) return;
                 break;
             
-            case 6:
+            case 7:
                 if (!FindBuilding("Condenser2")) return;
                 if (BuildingSystem.PlacingBuilding) return;
 
                 break;
             
-            case 7:
+            case 8:
                 if (GameManager.Instance.Capacitance < 2500) return;
                 if (BuildingSystem.PlacingBuilding) return;
                 
                 break;
             
-            case 8:
+            case 9:
                 if (!FindBuilding("Harvester1")) return;
                 if (BuildingSystem.PlacingBuilding) return;
 
                 break;
             
-            case 9:
+            case 10:
                 List<Building> buildings = FindObjectsByType<Building>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();
                 if (buildings.Count == 0) return;
 
@@ -126,7 +127,7 @@ public class TutorialManager : Singleton<TutorialManager>
     {
         messagePanel.SetActive(false);
 
-        if (MessageIndex != 10) return;
+        if (MessageIndex != 11) return;
 
         GameManager.Instance.HiddenByTutorial = false;
     }
@@ -137,6 +138,7 @@ public class TutorialManager : Singleton<TutorialManager>
         {
             case 0:
             case 1:
+            case 3:
                 Advance();
                 ShowMessage();
 

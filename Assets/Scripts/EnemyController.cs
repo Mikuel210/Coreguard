@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = Unity.Mathematics.Random;
 
 public class EnemyController : MonoBehaviour
 {
@@ -9,9 +10,12 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private float damageToCore;
     [SerializeField] private float damageToBuildings;
     [SerializeField] private Slider healthbarSlider;
+    [SerializeField] private AudioClip damageSound;
+    [SerializeField] private AudioClip destroySound;
     
     private Health _health;
     private Animator _animator;
+    private AudioSource _audioSource;
 
     private List<GameObject> _buildingsBeingTouched = new();
     
@@ -19,6 +23,7 @@ public class EnemyController : MonoBehaviour
     {
         _health = GetComponent<Health>();
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
     }
     
     void Update()
@@ -53,13 +58,22 @@ public class EnemyController : MonoBehaviour
         _damageTime += Time.deltaTime;
 
         if (_damageTime < 1) return;
-
-        bool error = true;
         
         for (int i = _buildingsBeingTouched.Count - 1; i >= 0; i--)
         {
             GameObject building = _buildingsBeingTouched[i];
-            building.GetComponent<Health>().TakeDamage(damageToBuildings);
+            
+            Health health = building.GetComponent<Health>();
+            
+            if (health.CurrentHealth - damageToBuildings <= 0)
+                _audioSource.clip = destroySound;
+            else
+                _audioSource.clip = damageSound;
+            
+            _audioSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
+            _audioSource.Play();
+            
+            health.TakeDamage(damageToBuildings);
         }
         
         _damageTime = 0;

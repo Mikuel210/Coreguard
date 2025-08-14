@@ -141,7 +141,7 @@ public class GameManager : Singleton<GameManager>
         
         if (CurrentState == GameState.Intermission)
         {
-            if (CurrentWaveIndex == Waves.Count && GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
+            if (LatestStartedWave == Waves.Count && GameObject.FindGameObjectsWithTag("Enemy").Length == 0)
                 Win();
             
             if (StateTime < CurrentWave.delay) return;
@@ -170,7 +170,7 @@ public class GameManager : Singleton<GameManager>
         foreach (Burst burst in CurrentWave.bursts)
         {
             StartCoroutine(SpawnBurst(burst));   
-            _currentWaveDuration = Mathf.Max(_currentWaveDuration, burst.initialDelay + burst.delay * burst.amount);
+            _currentWaveDuration = Mathf.Max(_currentWaveDuration, burst.initialDelay + burst.delay * (burst.amount - 1));
         }
     }    
     
@@ -182,15 +182,15 @@ public class GameManager : Singleton<GameManager>
         float distance = 25f;
 
         int angle = _random.Next(0, 360);
-        float x = Mathf.Cos(angle) * distance;
-        float y = Mathf.Sin(angle) * distance;
+        float x = Mathf.Cos(angle * Mathf.Deg2Rad) * distance;
+        float y = Mathf.Sin(angle * Mathf.Deg2Rad) * distance;
 
         Vector2 spawnPosition = new(x, y);
 
         for (int i = 0; i < burst.amount; i++)
         {
-            yield return new WaitForSeconds(burst.delay);
             Instantiate(burst.prefab, spawnPosition, Quaternion.identity);
+            yield return new WaitForSeconds(burst.delay);
         }
     }
     

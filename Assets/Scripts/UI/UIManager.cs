@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CodeMonkey.Utils;
 using Helpers;
 using UnityEngine;
 using TMPro;
@@ -8,7 +9,12 @@ using UnityEngine.UI;
 
 public class UIManager : Singleton<UIManager>
 {
-    [SerializeField] private TextMeshProUGUI _energyText;
+    [SerializeField] private GameObject popupPrefab;
+
+    [Space, SerializeField] private Sprite trashWhite;
+    [SerializeField] private Sprite trashRed;
+    
+    [Space, SerializeField] private TextMeshProUGUI _energyText;
     [SerializeField] private TextMeshProUGUI _capacitanceText;
     
     [Space, SerializeField] private TextMeshProUGUI _waveText;
@@ -25,11 +31,11 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private List<TextMeshProUGUI> timeTexts;
 
     private bool _isShopOpen;
-    private bool IsShopOpen
+    public bool IsShopOpen
     {
         get => _isShopOpen;
         
-        set
+        private set
         {
             _isShopOpen = value;
             UpdateShop();
@@ -38,9 +44,12 @@ public class UIManager : Singleton<UIManager>
 
     void Start()
     {
+        Utils.popupPrefab = popupPrefab;
+        
         GameManager.Instance.OnEnergyChanged += UpdateEnergyText;
         GameManager.Instance.OnCapacitanceChanged += UpdateCapacitanceText;
         GameManager.Instance.OnStateChanged += UpdateStatePanels;
+        BuildingSystem.OnDeletingBuildingsChanged += UpdateTrashButton;
         
         UpdateShop();
         UpdateEnergyText();
@@ -51,11 +60,38 @@ public class UIManager : Singleton<UIManager>
     {
         // Close shop on escape
         if (Input.GetKeyDown(KeyCode.Escape))
-            CloseShop();
+        {
+            PauseSystem.Instance.DontPauseThisFrame();
+            CloseShop();   
+            PauseSystem.Instance.DontPauseThisFrame();
+        }
         
         // Update state time
         UpdateStateTime();
         UpdateWaveText();
+    }
+
+    void UpdateTrashButton()
+    {
+        if (_deleteButton == null) return;
+        
+        if (BuildingSystem.DeletingBuildings)
+        {
+            _deleteButton.GetComponent<Image>().sprite = trashRed;
+            _deleteButton.GetComponent<RectTransform>().localScale = Vector3.one * 1.5f;
+            _shopButton.SetActive(false);
+        }
+        else
+            StopDeleting();
+    }
+
+    public void StopDeleting()
+    {
+        if (_deleteButton == null) return;
+        
+        _deleteButton.GetComponent<Image>().sprite = trashWhite;
+        _deleteButton.GetComponent<RectTransform>().localScale = Vector3.one * 1f;
+        _shopButton.SetActive(true);
     }
 
     public void OpenShop() => IsShopOpen = true;
@@ -66,14 +102,18 @@ public class UIManager : Singleton<UIManager>
         if (_isShopOpen)
         {
             _shopPanel.SetActive(true);
-            _shopButton.SetActive(false);       
-            _deleteButton.SetActive(false);
+            _shopButton.SetActive(false);
+            
+            if (_shopButton != null)
+                _deleteButton.SetActive(false);    
         }
         else
         {
             _shopPanel.SetActive(false);
             _shopButton.SetActive(true);
-            _deleteButton.SetActive(true);
+            
+            if (_shopButton != null)
+                _deleteButton.SetActive(true);   
         }
     }
     
