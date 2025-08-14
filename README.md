@@ -1,3 +1,5 @@
 # Coreguard
 
 In Coreguard, your mission is to defend the Core: an orb of pure energy with the power of creation itself. Each time you click on the Core, you gather Raw Energy: a substance that can be shaped into anything you can imagine. With it, you can materialize Dream Condensers and Energy Harvesters to increase your production, or you can place Energy Vaults to increase your storage. Beware though, creation isn't enough: enemies will come. Place weapons and shield your structures to protect the Core through 20 waves of increasing difficulty.
+
+**Play now at https://coreguard.netlify.app**
